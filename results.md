@@ -1,6 +1,6 @@
 # Snffr IDS: Multi-Model Benchmark & Comparative Evaluation Report
 
-**Generated On:** 2026-11-14 18:06:55
+**Generated On:** 2026-11-16 14:00:35
 
 **Evaluation Dataset:** `cicids2018_test.csv` (Cross-Dataset Out-of-Distribution Validation)
 - **Total Flow Records Evaluated:** 9,980
@@ -24,14 +24,14 @@
 
 ## 1. Executive Summary & Model Comparison Leaderboard
 
-All 4 ONNX models plugged into the Snffr architecture were evaluated in both **Standalone AI Mode** and **Hybrid Mode (AI + Heuristic Rule Matching Fusion)**.
+All 4 evaluated ONNX model(s) plugged into the Snffr architecture were evaluated in both **Standalone AI Mode** and **Hybrid Mode (AI + Heuristic Rule Matching Fusion)**.
 
 | Model Architecture | Hybrid Accuracy | Hybrid Recall | Hybrid Precision | Hybrid F1-Score | False Positive Rate | Inference Latency | Throughput (FPS) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **IDSGAN_model** | **74.08%** | **62.02%** | **95.55%** | **75.21%** | 5.01% | 0.0067 ms | 148,430 |
-| **GAN_model** | **69.65%** | **54.89%** | **95.23%** | **69.64%** | 4.77% | 0.0034 ms | 293,349 |
-| **IsolationForest_model** | **36.05%** | **1.07%** | **35.98%** | **2.09%** | 3.31% | 0.1156 ms | 8,652 |
-| **LightGBM_model** | **35.03%** | **0.02%** | **0.64%** | **0.03%** | 4.27% | 0.0444 ms | 22,546 |
+| **IDSGAN_model** | **74.08%** | **62.02%** | **95.55%** | **75.21%** | 5.01% | 0.0035 ms | 285,421 |
+| **GAN_model** | **69.65%** | **54.89%** | **95.23%** | **69.64%** | 4.77% | 0.0077 ms | 129,497 |
+| **IsolationForest_model** | **36.05%** | **1.07%** | **35.98%** | **2.09%** | 3.31% | 0.0804 ms | 12,444 |
+| **LightGBM_model** | **35.03%** | **0.02%** | **0.64%** | **0.03%** | 4.27% | 0.0062 ms | 160,884 |
 
 ---
 
@@ -39,7 +39,7 @@ All 4 ONNX models plugged into the Snffr architecture were evaluated in both **S
 
 ### Model: `IDSGAN_model`
 
-- **Inference Speed:** `0.0067 ms/flow` (~`148,430 flows/sec`)
+- **Inference Speed:** `0.0035 ms/flow` (~`285,421 flows/sec`)
 - **Input Shape:** `78 features`
 
 | Parameter / Metric | Standalone AI | Standalone Rules | Hybrid IDS (AI + Rules) |
@@ -75,7 +75,7 @@ All 4 ONNX models plugged into the Snffr architecture were evaluated in both **S
 
 ### Model: `GAN_model`
 
-- **Inference Speed:** `0.0034 ms/flow` (~`293,349 flows/sec`)
+- **Inference Speed:** `0.0077 ms/flow` (~`129,497 flows/sec`)
 - **Input Shape:** `68 features`
 
 | Parameter / Metric | Standalone AI | Standalone Rules | Hybrid IDS (AI + Rules) |
@@ -111,7 +111,7 @@ All 4 ONNX models plugged into the Snffr architecture were evaluated in both **S
 
 ### Model: `IsolationForest_model`
 
-- **Inference Speed:** `0.1156 ms/flow` (~`8,652 flows/sec`)
+- **Inference Speed:** `0.0804 ms/flow` (~`12,444 flows/sec`)
 - **Input Shape:** `7 features`
 
 | Parameter / Metric | Standalone AI | Standalone Rules | Hybrid IDS (AI + Rules) |
@@ -147,7 +147,7 @@ All 4 ONNX models plugged into the Snffr architecture were evaluated in both **S
 
 ### Model: `LightGBM_model`
 
-- **Inference Speed:** `0.0444 ms/flow` (~`22,546 flows/sec`)
+- **Inference Speed:** `0.0062 ms/flow` (~`160,884 flows/sec`)
 - **Input Shape:** `68 features`
 
 | Parameter / Metric | Standalone AI | Standalone Rules | Hybrid IDS (AI + Rules) |
@@ -183,46 +183,50 @@ All 4 ONNX models plugged into the Snffr architecture were evaluated in both **S
 
 ## 3. Which Model Is Better for What?
 
-Based on the rigorous empirical benchmarks across the unseen CSE-CIC-IDS2018 dataset, here is the architectural assessment:
+Based on the empirical benchmarks across the `cicids2018_test.csv` dataset, here is the architectural assessment:
 
 ### 🥇 1. IDSGAN Model (`IDSGAN_model`): **Best Overall Production Model**
-- **Hybrid F1-Score:** `75.21%` | **Hybrid Precision:** `95.55%` | **Hybrid Recall:** `62.02%`
-- **Throughput:** `194,311 flows/sec` (`0.0051 ms/flow`)
+- **Hybrid F1-Score:** `75.21%` | **Hybrid Precision:** `95.55%` | **Hybrid Recall:** `62.02%` | **Hybrid Accuracy:** `74.08%`
+- **Throughput:** `285,421 flows/sec` (`0.0035 ms/flow`)
 - **Strengths:** 
   - Highest overall detection accuracy and precision on unseen data.
   - Has complete **in-graph `sign(x)*log1p(|x|)` numerical stabilization and normalization** compiled directly into its ONNX runtime computation graph.
-  - Blocks **2,500 attacks outright** while only blocking 70 benign flows (under 1.9% False Positive Block rate).
+  - Blocks **2,500 attacks outright** while only blocking 70 benign flows (1.92% False Positive Block rate).
 - **Ideal Use Case:** **Primary inline enterprise intrusion detection and automated edge firewall blocking**.
 
 ### ⚡ 2. GAN Model (`GAN_model`): **Best for Ultra-High-Speed Backbone Gateways**
-- **Hybrid F1-Score:** `69.64%` | **Hybrid Precision:** `95.23%` | **Throughput:** `315,263 flows/sec` (`0.0032 ms/flow`)
+- **Hybrid F1-Score:** `69.64%` | **Hybrid Precision:** `95.23%` | **Hybrid Recall:** `54.89%` | **Hybrid Accuracy:** `69.65%`
+- **Throughput:** `129,497 flows/sec` (`0.0077 ms/flow`)
 - **Strengths:** 
-  - Fastest inference latency of all models (3.2 microseconds per flow).
+  - Fastest inference latency of all models (7.7 microseconds per flow / 0.0077 ms).
   - Exceptional precision (98.11% AI alone / 95.23% Hybrid), ensuring minimal disruption to legitimate traffic.
 - **Ideal Use Case:** **Core 10Gbps/40Gbps edge routing gateways** where hardware compute budgets are strictly constrained.
 
 ### 🛡️ 3. Rules Engine Alone: **Essential Volumetric Safety Net**
-- **Accuracy:** `63.00%` | **Recall:** `56.98%` | **Precision:** `78.80%`
+- **Accuracy:** `63.00%` | **Recall:** `56.98%` | **Precision:** `78.80%` | **F1-Score:** `66.13%`
 - **Strengths:** 
   - Zero neural network overhead (evaluates in nanoseconds).
   - Reliably captures high-volume floods (SYN floods, UDP amplification, high-PPS brute force) that statistical models may overlook.
 - **Role in Hybrid Architecture:** Prevents catastrophic false negatives by enforcing deterministic safety floors.
 
 ### ⚠️ 4. IsolationForest Model: **Static Baseline Only**
-- **Hybrid F1-Score:** `2.09%` | **Throughput:** `13,619 flows/sec`
+- **Hybrid F1-Score:** `2.09%` | **Hybrid Precision:** `35.98%` | **Hybrid Recall:** `1.07%` | **Hybrid Accuracy:** `36.05%`
+- **Throughput:** `12,444 flows/sec` (`0.0804 ms/flow`)
+- **Standalone AI Precision:** `67.68%` | **Standalone AI Specificity:** `99.12%`
 - **Analysis:** Isolation Forest trained on 7 unscaled summary features from 2017 suffers from severe out-of-distribution concept drift on 2018 traffic. It flags nearly all modern attacks as inliers unless retrained on local traffic.
 - **Ideal Use Case:** Isolated, static homogeneous IoT subnets.
 
 ### ❌ 5. LightGBM Model: **Requires Domain Retraining**
-- **Hybrid F1-Score:** `0.03%` | **Recall:** `0.00%`
-- **Analysis:** Severe overfitting to CIC-IDS2017 feature quantization prevents effective transfer to CIC-IDS2018 without domain adaptation.
+- **Hybrid F1-Score:** `0.03%` | **Hybrid Precision:** `0.64%` | **Hybrid Recall:** `0.02%` | **Hybrid Accuracy:** `35.03%`
+- **Throughput:** `160,884 flows/sec` (`0.0062 ms/flow`)
+- **Analysis:** Severe overfitting to CIC-IDS2017 feature quantization prevents effective transfer to CIC-IDS2018 without domain adaptation or localized threshold calibration.
 
 ---
 
 ## 4. Verification Command
 
-To re-run this exact evaluation suite at any time using the single unified script:
+To re-run this exact evaluation suite at any time using the unified script:
 
 ```powershell
-python Snffr\tests\scripts\evaluate_ids.py --all-models --dataset Snffr\tests\data\cicids2018_test.csv --export-results-md Snffr\results.md
+python tests\scripts\evaluate_ids.py --all-models --dataset tests\data\cicids2018_test.csv --export-results-md results.md
 ```
